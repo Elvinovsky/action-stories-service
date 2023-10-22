@@ -17,7 +17,7 @@ import { QueryInputModel } from '../../pagination/pagination.dto';
 export class ActionStoriesController {
   constructor(private readonly historyService: ActionStoriesService) {}
 
-  @Post('create')
+  @Post()
   @HttpCode(HttpStatus.OK)
   async create(@Payload() inputModel: CreateHistoryDto) {
     console.log(inputModel);
