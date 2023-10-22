@@ -30,7 +30,7 @@ export class ActionStoriesService {
     await this.storiesModel.create(actionCreateBuild);
   }
 
-  async findAll(
+  async getSortedAll(
     pageNumber: number,
     pageSize: number,
   ): Promise<PaginatorType<ActivityHistoryView[]>> {
@@ -53,7 +53,23 @@ export class ActionStoriesService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} history`;
+  async getSortedByUserId(
+    pageNumber: number,
+    pageSize: number,
+    userId: string,
+  ): Promise<PaginatorType<ActivityHistoryView[]>> {
+    const actionStories = await this.storiesModel.findAndCountAll({
+      where: { userId: userId },
+      limit: getPageSize(pageSize), // Ограничение на количество записей
+      offset: getSkip(pageNumber, pageSize), // Смещение (количество записей, которые нужно пропустить)
+    });
+
+    return {
+      pagesCount: getPagesCount(actionStories.count, pageSize),
+      page: getPageNumber(pageNumber),
+      pageSize: getPageSize(pageSize),
+      totalCount: actionStories.count,
+      items: await historyToActivityMapper(actionStories.rows),
+    };
   }
 }

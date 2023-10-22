@@ -1,5 +1,13 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { Payload } from '@nestjs/microservices';
 import { ActionStoriesService } from '../infrastructure/action-stories.service';
 import { CreateHistoryDto } from '../dto/create-history.dto';
 import { QueryInputModel } from '../../pagination/pagination.dto';
@@ -9,21 +17,23 @@ export class ActionStoriesController {
   constructor(private readonly historyService: ActionStoriesService) {}
 
   @Post('create')
+  @HttpCode(HttpStatus.OK)
   async create(@Payload() inputModel: CreateHistoryDto) {
     console.log(inputModel);
     await this.historyService.createActionCreate(inputModel);
+    return true;
   }
 
-  @Get()
-  findAll(
-    @Query()
-    query: QueryInputModel,
-  ) {
-    return this.historyService.findAll(query.pageNumber, query.pageSize);
+  @Get() getSorted(@Query() query: QueryInputModel) {
+    return this.historyService.getSortedAll(query.pageNumber, query.pageSize);
   }
 
-  @MessagePattern('findOneHistory')
-  findOne(@Payload() id: number) {
-    return this.historyService.findOne(id);
+  @Get(':id')
+  getSortedById(@Query() query: QueryInputModel, @Param('id') id: string) {
+    return this.historyService.getSortedByUserId(
+      query.pageNumber,
+      query.pageSize,
+      id,
+    );
   }
 }
