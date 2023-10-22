@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -35,5 +36,9 @@ export class ActionStoriesController {
       query.pageSize,
       id,
     );
+  }
+
+  @Delete('testing/all-data') cleatDBTests() {
+    return this.historyService.clearDB();
   }
 }

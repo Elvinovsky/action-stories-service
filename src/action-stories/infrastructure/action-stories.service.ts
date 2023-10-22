@@ -36,6 +36,7 @@ export class ActionStoriesService {
   ): Promise<PaginatorType<ActivityHistoryView[]>> {
     try {
       const actionStories = await this.storiesModel.findAndCountAll({
+        order: [['createdAt', 'DESC']],
         limit: getPageSize(pageSize), // Ограничение на количество записей
         offset: getSkip(pageNumber, pageSize), // Смещение (количество записей, которые нужно пропустить)
       });
@@ -71,5 +72,9 @@ export class ActionStoriesService {
       totalCount: actionStories.count,
       items: await historyToActivityMapper(actionStories.rows),
     };
+  }
+
+  async clearDB(): Promise<void> {
+    await this.storiesModel.truncate();
   }
 }

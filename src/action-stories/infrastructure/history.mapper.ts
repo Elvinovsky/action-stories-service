@@ -19,30 +19,30 @@ export const historyToActivityMapper = async (
         },
         oldData: [],
       };
+      // если текущая запись более новая
+    } else if (el.createdAt > userActivities[userId].actualData.changedAt) {
+      //переносим актуальные данные в старые данные.
+      userActivities[userId].oldData.push(userActivities[userId].actualData);
+
+      // Обновляем актуальные данные
+      userActivities[userId].actualData.fullName = el.fullName;
+      userActivities[userId].actualData.age = el.age;
+      userActivities[userId].actualData.changedAt = el.createdAt;
     } else {
       userActivities[userId].oldData.push({
         fullName: el.fullName,
         age: el.age,
-        changedAt: new Date(el.createdAt),
+        changedAt: el.createdAt,
       });
-
-      // Обновляем актуальные данные, если текущая запись более новая
-      if (
-        new Date(el.createdAt) > userActivities[userId].actualData.changedAt
-      ) {
-        userActivities[userId].actualData.fullName = el.fullName;
-        userActivities[userId].actualData.age = el.age;
-        userActivities[userId].actualData.changedAt = new Date(el.createdAt);
-      }
     }
   }
 
-  // Удаляем первый элемент из старых данных, который является актуальным
-  for (const userId in userActivities) {
-    if (userActivities.hasOwnProperty(userId)) {
-      userActivities[userId].oldData.pop();
-    }
-  }
+  // // Удаляем первый элемент из старых данных, который является актуальным
+  // for (const userId in userActivities) {
+  //   if (userActivities.hasOwnProperty(userId)) {
+  //     userActivities[userId].oldData.pop();
+  //   }
+  // }
 
   // Преобразуем объекты активностей в массив
   return Object.values(userActivities);
